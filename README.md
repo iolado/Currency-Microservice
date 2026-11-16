@@ -1,7 +1,7 @@
 # CS361 Currency-Microservice
 
-A Python microservice that is able to convert a monetary amount from one currency to another. It uses the API at https://open.er-api.com/v6/latest/. The program accepts from_currency, to_currency, and original_amount. It returns converted_amount, exchange_rate, and rate_date (the date the exchange rate is retrieved). Data is returned in JSON format.
-
+#### A Python microservice that is able to convert a monetary amount from one currency to another. It uses the API at https://open.er-api.com/v6/latest/. The program accepts from_currency, to_currency, and original_amount. It returns converted_amount, exchange_rate, and rate_date (the date the exchange rate is retrieved). Data is returned in JSON format.
+__________________________________________________________________________________________________
 
 Requirements
 Python 3.10 or newer
