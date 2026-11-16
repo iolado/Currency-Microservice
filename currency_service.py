@@ -1,5 +1,7 @@
 import zmq
 import requests
+from datetime import date
+import json
 
 
 ## 0MQ Context
@@ -8,11 +10,11 @@ context = zmq.Context()
 ## Create reply socket
 socket = context.socket(zmq.REP)
 
-## bind socket to port 5555
-socket.bind("tcp://*:5555")
+## bind socket to port 5473
+socket.bind("tcp://*:5473")
 
 ## send message to client
-print("Currency Microservice is running on port 5555...")
+print("Currency Microservice is running on port 5473...")
 
 
 def get_exchange_rates(from_currency, to_currency):
@@ -37,6 +39,14 @@ while True:
     converted_amount = amount * rate
 
     # Process the conversion and prepare the response
-    response = f"{amount} {from_currency} is equal to {converted_amount:.2f} {to_currency}"
+    response = {
+        "from_currency": from_currency,
+        "to_currency": to_currency,
+        "original_amount": f"{amount:.2f}",
+        "converted_amount": f"{converted_amount:.2f}",
+        "exchange_rate": round(rate, 2),
+        "rate_date": str(date.today()) 
+    }
+
     # Send reply back to client
-    socket.send_string(response)
+    socket.send_string(json.dumps(response))
