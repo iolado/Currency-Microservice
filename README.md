@@ -121,6 +121,7 @@ print(f”Rate Date:”, data[rate_date])
 
 ## UML Sequence Diagram
 
+
 sequenceDiagram
     participant Client as Expense Tracker / Client
     participant Service as Currency Microservice
