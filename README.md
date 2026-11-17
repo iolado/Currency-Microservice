@@ -123,16 +123,25 @@ print(f”Rate Date:”, data[rate_date])
 
 
 sequenceDiagram
-    participant Client as Expense Tracker / Client
+    autonumber
+    participant Client as Personal Expense Tracker
     participant Service as Currency Microservice
     participant API as Exchange Rate API
 
-    Client->>Service: Send conversion request (USD, EUR, 100)
-    Service->>Service: Parse currency codes and amount
-    Service->>API: GET /v6/latest/USD
-    API-->>Service: JSON exchange rates
-    Service->>Service: Get EUR rate and calculate amount
-    Service-->>Client: JSON conversion result
-    Client->>Client: Display converted amount
-  
+    Client->>Service: Send JSON request via ZeroMQ (Port 5473)
+    Note over Client,Service: from_currency, to_currency, original_amount
+
+    Service->>Service: Validate request parameters
+
+    alt Valid request
+        Service->>API: GET /v6/latest/USD
+        API-->>Service: Return exchange rates (JSON)
+        Service->>Service: Calculate converted amount
+        Service-->>Client: Return conversion result (JSON)
+        Note over Client,Service: converted_amount, exchange_rate, rate_date
+        Client->>Client: Display converted amount
+    else Invalid request
+        Service-->>Client: Return JSON error message
+    end
+
 
