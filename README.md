@@ -121,27 +121,18 @@ print(f”Rate Date:”, data[rate_date])
 
 ## UML Sequence Diagram
 
-
+```mermaid
 sequenceDiagram
-    autonumber
-    participant Client as Personal Expense Tracker
+    participant Client as Expense Tracker
     participant Service as Currency Microservice
     participant API as Exchange Rate API
 
-    Client->>Service: Send JSON request via ZeroMQ (Port 5473)
-    Note over Client,Service: from_currency, to_currency, original_amount
-
-    Service->>Service: Validate request parameters
-
-    alt Valid request
-        Service->>API: GET /v6/latest/USD
-        API-->>Service: Return exchange rates (JSON)
-        Service->>Service: Calculate converted amount
-        Service-->>Client: Return conversion result (JSON)
-        Note over Client,Service: converted_amount, exchange_rate, rate_date
-        Client->>Client: Display converted amount
-    else Invalid request
-        Service-->>Client: Return JSON error message
-    end
+    Client->>Service: Send JSON conversion request
+    Service->>Service: Validate request
+    Service->>API: Request exchange rates
+    API-->>Service: Return exchange rates
+    Service->>Service: Calculate converted amount
+    Service-->>Client: Return JSON response
+```
 
 
