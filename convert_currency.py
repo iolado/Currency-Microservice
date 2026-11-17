@@ -1,24 +1,62 @@
+
+import json
 import zmq
 
-## 0MQ Context
-context = zmq.Context()
 
-## Create request socket
-socket = context.socket(zmq.REQ)
+def main():
+    context = zmq.Context()
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:5473")
 
-## connect to the server
-socket.connect("tcp://localhost:5473")
+    # Prevent waiting forever if the service is unavailable
+    socket.setsockopt(zmq.RCVTIMEO, 10000)
+    socket.setsockopt(zmq.SNDTIMEO, 10000)
+    socket.setsockopt(zmq.LINGER, 0)
 
-## send request to the server
-from_currency = input("Enter the source currency code (e.g., USD): ")
-to_currency = input("Enter the target currency code (e.g., EUR): ")
-original_amount = input("Enter the amount to convert (e.g., 100): ")
-request_message = f"{from_currency},{to_currency},{original_amount}"
-print(f"Sending request: {request_message}")
+    try:
+        from_currency = input(
+            "Enter source currency (e.g., USD): "
+        )
 
-## send request to the server
-socket.send_string(request_message)
+        to_currency = input(
+            "Enter target currency (e.g., EUR): "
+        )
 
-## receive response from the server
-response = socket.recv_string()
-print(f"Converted amount: {response}")
+        amount = input(
+            "Enter amount to convert: "
+        )
+
+        request_data = {
+            "from_currency": from_currency,
+            "to_currency": to_currency,
+            "original_amount": amount,
+        }
+
+        print("\nSending request:")
+        print(json.dumps(request_data, indent=2))
+
+        socket.send_json(request_data)
+
+        response = socket.recv_json()
+
+        print("\nReceived response:")
+        print(json.dumps(response, indent=2))
+
+        if "error" in response:
+            print("\nConversion failed:", response["error"])
+        else:
+            print(
+                "\nConverted amount:",
+                response["converted_amount"],
+                response["to_currency"],
+            )
+
+    except zmq.Again:
+        print("Error: Microservice did not respond in time.")
+
+    finally:
+        socket.close()
+        context.term()
+
+if __name__ == "__main__":
+    main()

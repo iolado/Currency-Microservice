@@ -119,5 +119,19 @@ print(f”Exchange Rate:”, data[exchange_rate])
 print(f”Rate Date:”, data[rate_date])
 ```
 
+## UML Sequence Diagram
 
+sequenceDiagram
+    participant Client as Expense Tracker / Client
+    participant Service as Currency Microservice
+    participant API as Exchange Rate API
+
+    Client->>Service: Send conversion request (USD, EUR, 100)
+    Service->>Service: Parse currency codes and amount
+    Service->>API: GET /v6/latest/USD
+    API-->>Service: JSON exchange rates
+    Service->>Service: Get EUR rate and calculate amount
+    Service-->>Client: JSON conversion result
+    Client->>Client: Display converted amount
+  
 
